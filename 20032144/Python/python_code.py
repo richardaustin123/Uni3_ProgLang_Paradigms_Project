@@ -103,15 +103,15 @@ def take_turn(player):
     print("It's player " + player + "'s turn\n")
     print("Press 1 to save your building or press 0 to spread fire on your opponent...\n")
     waterOrFire = int(input("Enter 1 or 0: \n")) 
-    move = int(input("Enter move index (1-20): \n")) # get the move index position
+    move = int(input("Which room do you chose (1-20): \n")) # get the move index position
     if player == "1" and waterOrFire == 1:
-        playerOneBuilding[move-1] = 1
+        playerOneBuilding[19 - move - 1] = 1 # User enters 1-20 where 1 is the bottom of the building and 20 is the top so we need to reverse the index (19 - flat number) and then - 1 as array is 0-19 not 1-20
     elif player == "1" and waterOrFire == 0:
-        playerTwoBuilding[move-1] = 0
+        playerTwoBuilding[19 - move - 1] = 0
     elif player == "2" and waterOrFire == 1:
-        playerTwoBuilding[move-1] = 1
+        playerTwoBuilding[19 - move - 1] = 1
     elif player == "2" and waterOrFire == 0:
-        playerOneBuilding[move-1] = 0
+        playerOneBuilding[19 - move - 1] = 0
 
 def intro():
     print("YOU'RE BUILDINGS ON FIRE\n")
@@ -140,9 +140,13 @@ def game_loop():
     elif gameOver == True:
         print("Game over\n")
 
+def play():
+    intro()
+    game_loop()
+
 # main()
 def main():
-    game_loop()
+    play()
 
 # Run the main function
 # Environment variables
