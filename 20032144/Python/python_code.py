@@ -29,10 +29,10 @@ col = 0
 row = 0
 
 # Player one building array
-playerOneBuilding = [[ 1, 0, 0, 0, 1],    # 16. 17. 18. 19. 20. 
-                     [ 0, 1, 0, 1, 0],    # 11. 12. 13. 14. 15.
-                     [ 0, 1, 0, 1, 0],    # 6.  7.  8.  9.  10.
-                     [ 0, 0, 1, 0, 0]]    # 1.  2.  3.  4.  5.
+playerOneBuilding = [[ 1, 0, 0, 0, 0],    # 16. 17. 18. 19. 20. 
+                     [ 0, 0, 0, 0, 0],    # 11. 12. 13. 14. 15.
+                     [ 0, 0, 0, 0, 0],    # 6.  7.  8.  9.  10.
+                     [ 0, 0, 0, 0, 0]]    # 1.  2.  3.  4.  5.
 
 # Player two building array
 playerTwoBuilding = [[ 1, 0, 0, 0, 1],    # 16. 17. 18. 19. 20. 
@@ -46,11 +46,7 @@ building = ["-"] * 20
 # display_playerone_building()
 # Use the previously made building array of "-"s to display the building
 def display_playerone_building():
-    # print(building[0],  building[1],  building[2],  building[3],  building[4])  # - - - - -
-    # print(building[5],  building[6],  building[7],  building[8],  building[9])  # - - - - -
-    # print(building[10], building[11], building[12], building[13], building[14]) # - - - - -
-    # print(building[15], building[16], building[17], building[18], building[19]) # - - - - -
-    print("Player 1's building")
+    print("\nPlayer 1's building")
     for row in playerOneBuilding:
         print(' '.join(map(str, row)))
     print("\n")
@@ -58,12 +54,8 @@ def display_playerone_building():
 # display_playertwo_building()
 # Use the previously made building array of "-"s to display the building
 def display_playertwo_building():
-    # print(building[0],  building[1],  building[2],  building[3],  building[4])  # - - - - -
-    # print(building[5],  building[6],  building[7],  building[8],  building[9])  # - - - - -
-    # print(building[10], building[11], building[12], building[13], building[14]) # - - - - -
-    # print(building[15], building[16], building[17], building[18], building[19]) # - - - - -
     print("Player 2's building")
-    for row in playerOneBuilding:
+    for row in playerTwoBuilding:
         print(' '.join(map(str, row)))
     print("\n")
 
@@ -93,12 +85,10 @@ def playerTwoWin(playerTwoWinner):
 
 # checkWinner()
 def checkWinner(gameOver, playerOneWinner, playerTwoWinner):
-    playerOneWin(playerOneWinner)
-    playerTwoWin(playerTwoWinner)
-    if playerOneWinner == True:
+    if playerOneWin(playerOneWinner) == True:
         print("Player 1 wins\n")
         gameOver = True
-    elif playerTwoWinner == True:
+    elif playerTwoWin(playerTwoWinner) == True:
         print("Player 2 wins\n")
         gameOver = True
     return gameOver
@@ -112,19 +102,15 @@ def take_turn(player, row, col):
     if player == "1" and waterOrFire == 1:
         row, col = update_building(move, row, col)
         playerOneBuilding[row][col] = 1 # User enters 1-20 where 1 is the bottom of the building and 20 is the top so we need to reverse the index (19 - flat number) and then - 1 as array is 0-19 not 1-20
-        display_playerone_building()
     elif player == "1" and waterOrFire == 0:
         row, col = update_building(move, row, col)
         playerTwoBuilding[row][col] = 0
-        display_playertwo_building()
     elif player == "2" and waterOrFire == 1:
         row, col = update_building(move, row, col)
         playerTwoBuilding[row][col] = 1
-        display_playertwo_building() 
     elif player == "2" and waterOrFire == 0:
         row, col = update_building(move, row, col)
         playerOneBuilding[row][col] = 0
-        display_playerone_building()
 
 # update_building(+move, -row, -col)
 def update_building(move, row, col):
@@ -159,21 +145,22 @@ def display_building_numbers():
 # game_loop()
 def game_loop():
     global playerOneWinner, playerTwoWinner, playerOnesGo, playerTwosGo, gameOver, row, col
-    if gameOver == False:
-        display_playerone_building()
-        display_playertwo_building()
-        if playerOnesGo == True:
-            take_turn("1", row, col)
-            checkWinner(gameOver, playerOneWinner, playerTwoWinner)
-            playerOnesGo = False
-            playerTwosGo = True
-        elif playerTwosGo == True:
-            take_turn("2", row, col)
-            checkWinner(gameOver, playerOneWinner, playerTwoWinner)
-            playerTwosGo = False
-            playerOnesGo = True
-    elif gameOver == True:
-        print("Game over\n")
+    while playerOneWinner == False and playerTwoWinner == False and gameOver == False:
+        if gameOver == False:
+            display_playerone_building()
+            display_playertwo_building()
+            if playerOnesGo == True:
+                take_turn("1", row, col)
+                gameOver = checkWinner(gameOver, playerOneWinner, playerTwoWinner)
+                playerOnesGo = False
+                playerTwosGo = True
+            elif playerTwosGo == True:
+                take_turn("2", row, col)
+                gameOver = checkWinner(gameOver, playerOneWinner, playerTwoWinner)
+                playerTwosGo = False
+                playerOnesGo = True
+        elif gameOver == True:
+            print("Game over\n")
 
 # play()
 # Kick off the game
