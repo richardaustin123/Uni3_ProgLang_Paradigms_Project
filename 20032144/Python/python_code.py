@@ -123,19 +123,23 @@ def take_turn(player, row, col):
     if player == "1" and waterOrFire == 1:
         row, col = update_building(roomNumber, row, col) # Get the row and column to be updated in the building array, based on the room number selected by the user
         playerOneBuilding[row][col] = 1
-        above_and_below(player, waterOrFire, row, col)
+        # above_and_below(player, waterOrFire, row, col)
+        spread_water(playerOneBuilding, col)
     elif player == "1" and waterOrFire == 0:
         row, col = update_building(roomNumber, row, col)
         playerTwoBuilding[row][col] = 0
-        above_and_below(player, waterOrFire, row, col)
+        # above_and_below(player, waterOrFire, row, col)
+        spread_fire(playerTwoBuilding, col)
     elif player == "2" and waterOrFire == 1:
         row, col = update_building(roomNumber, row, col)
         playerTwoBuilding[row][col] = 1
-        above_and_below(player, waterOrFire, row, col)
+        # above_and_below(player, waterOrFire, row, col)
+        spread_water(playerTwoBuilding, col)
     elif player == "2" and waterOrFire == 0:
         row, col = update_building(roomNumber, row, col)
         playerOneBuilding[row][col] = 0
-        above_and_below(player, waterOrFire, row, col)
+        # above_and_below(player, waterOrFire, row, col)
+        spread_fire(playerOneBuilding, col)
 
 # update_building(+roomNumber, -row, -col)
 # Get the row and column that needs to be updated in the building array, based on the room number selected by the user
@@ -145,33 +149,37 @@ def update_building(roomNumber, row, col):
         col = (roomNumber - 1) % 5        # e.g. roomNumber = 13 so 13 - 1 = 12 % 5 = 2 so col = 2 which is the third column (0, 1, 2, 3, 4)
     return row, col
 
-# above_and_below(+player, +waterOrFire, +row, +col)
-# Spread water or fire (1 or 0) below or above the room selected by the user, if the toom below or above is already water or fire (1 or 0)
-def above_and_below(player, waterOrFire, row, col):
-    # As long as the user doesn't select water for the bottom row or fire for the top row
-    # As water cant spread to the bottom if we're already at the bottom
-    # and fire cant spread to the top if we're already at the top
-    if not(waterOrFire == 1 and row == 3) or (waterOrFire == 0 and row == 0):
-        # If p1 selects 1 (water) and the row below is 1 (water) then set all rows below to 1 (water)
-        if ((player == "1" and waterOrFire == 1) and (playerOneBuilding[row + 1][col] == 1 or playerOneBuilding[row - 1][col] == 1)):
-            # set all rows below row+1 to 1 in a loop
-            for i in range(row + 1, len(playerOneBuilding)):
-                playerOneBuilding[i][col] = 1
-        # If p1 selects 0 (fire) and the row above is 0 (fire) then set all rows above to 0 (fire)
-        elif ((player == "1" and waterOrFire == 0) and (playerTwoBuilding[row + 1][col] == 0 or playerTwoBuilding[row - 1][col] == 0)):
-            # set all rows above row-1 to 0 in a loop
-            for i in range(row - 1, -1, -1):
-                playerTwoBuilding[i][col] = 0
-        # If p2 selects 1 (water) and the row below is 1 (water) then set all rows below to 1 (water)
-        elif ((player == "2" and waterOrFire == 1) and (playerTwoBuilding[row + 1][col] == 1 or playerTwoBuilding[row - 1][col] == 1)):
-            # set all rows below row+1 to 1 in a loop
-            for i in range(row + 1, len(playerTwoBuilding)):
-                playerTwoBuilding[i][col] = 1
-        # If p2 selects 0 (fire) and the row above is 0 (fire) then set all rows above to 0 (fire)
-        elif ((player == "2" and waterOrFire == 0) and (playerOneBuilding[row + 1][col] == 0 or playerOneBuilding[row - 1][col] == 0)):
-            # set all rows above row-1 to 0 in a loop
-            for i in range(row - 1, -1, -1):
-                playerOneBuilding[i][col] = 0
+# spread_water(+state, +column)
+def spread_water(state, column):
+    flag = False
+    # loop for each row
+    for row in range(0, 4):
+        # state[row][column]
+        # check the flag
+        if(flag == True and state[row][column] == 1):
+            # flow the water down the building column
+            for waterRow in range(row, 4):
+                state[waterRow][column] = 1
+            return
+        # if we are water then flag true
+        if(state[row][column] == 1):
+            flag = True
+
+# spread_fire(+state, +column)
+def spread_fire(state, column):
+    flag = False
+    # loop for each row
+    for row in range(3, 0, -1):
+        # state[row][column]
+        # check the flag
+        if(flag == True and state[row][column] == 0):
+            # flow the fire up the building column
+            for fireRow in range(row, 0, -1):
+                state[fireRow][column] = 0
+            return 
+        # if we are fire then flag true
+        if(state[row][column] == 0):
+            flag = True
 
 
 # check_winner(-gameOver, +playerOneWins, +playerTwoWins)
