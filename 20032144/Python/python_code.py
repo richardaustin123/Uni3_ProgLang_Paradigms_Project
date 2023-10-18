@@ -88,26 +88,19 @@ def game_loop():
                 playerTwosGo = False
                 playerOnesGo = True
 
-# display_playerone_building()
-# Print player one's building
-def display_playerone_building():
-    print("\nPlayer 1's building")
-    for row in playerOneBuilding:
-        print(' '.join(map(str, row)))
-    print("\n")
-
-# display_playertwo_building()
-# Print player two's building
-def display_playertwo_building():
-    print("Player 2's building")
-    for row in playerTwoBuilding:
+# display_building(+buildingArray)
+# Print the building array with a given player's building
+def display_building(buildingArray):
+    for row in buildingArray:
         print(' '.join(map(str, row)))
     print("\n")
 
 # display_both_buildings()
 def display_both_buildings():
-    display_playerone_building()
-    display_playertwo_building()
+    print("Player 1's building\n")
+    display_building(playerOneBuilding)
+    print("Player 2's building\n")
+    display_building(playerTwoBuilding)
 
 # take_turn(+player, +row, +col)
 # Each player takes a turn and their building is updated
@@ -116,24 +109,17 @@ def take_turn(player, row, col):
     print("Press 1 to spread water in your building or press 0 to spread fire on your opponent\n")
     waterOrFire = check_integer("Enter 1 or 0: \n")
     roomNumber = check_integer("Which room do you chose (1-20): \n") # get the room number index position
-    if player == "1" and waterOrFire == 1:
-        row, col = update_building(roomNumber, row, col) # Get the row and column to be updated in the building array, based on the room number selected by the user
-        playerOneBuilding[row][col] = 1
-        spread_water(playerOneBuilding, col)
-    elif player == "1" and waterOrFire == 0:
-        row, col = update_building(roomNumber, row, col)
-        playerTwoBuilding[row][col] = 0
-        spread_fire(playerTwoBuilding, col)
-    elif player == "2" and waterOrFire == 1:
-        row, col = update_building(roomNumber, row, col)
-        playerTwoBuilding[row][col] = 1
-        spread_water(playerTwoBuilding, col)
-    elif player == "2" and waterOrFire == 0:
-        row, col = update_building(roomNumber, row, col)
-        playerOneBuilding[row][col] = 0
-        spread_fire(playerOneBuilding, col)
-    else:
-        print("\n**************** Invalid input ****************\n")
+    row, col = update_building(roomNumber, row, col) # Get the row and column to be updated in the building array, based on the room number selected by the user
+    if player == "1":
+        if waterOrFire == 1:
+            start_water_flow(playerOneBuilding, row, col)
+        elif waterOrFire == 0:
+            start_fire_flow(playerTwoBuilding, row, col)
+    elif player == "2":
+        if waterOrFire == 1:
+            start_water_flow(playerTwoBuilding, row, col)
+        elif waterOrFire == 0:
+            start_fire_flow(playerOneBuilding, row, col)
 
 # check_integer(+number)
 # Check if the user input is an integer
@@ -144,6 +130,16 @@ def check_integer(number):
             return int(player_input)
         except ValueError:
             print("**************** Invalid input ****************\n")
+
+# start_water_flow(+buildingArray, +row, +col)
+def start_water_flow(buildingArray, row, col):
+    buildingArray[row][col] = 1
+    spread_water(buildingArray, col)
+
+# start_fire_flow(+buildingArray, +row, +col)
+def start_fire_flow(buildingArray, row, col):
+    buildingArray[row][col] = 0
+    spread_fire(buildingArray, col)
 
 # update_building(+roomNumber, -row, -col)
 # Get the row and column that needs to be updated in the building array, based on the room number selected by the player
