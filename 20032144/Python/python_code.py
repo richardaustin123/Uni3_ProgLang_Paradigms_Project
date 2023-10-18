@@ -52,7 +52,7 @@ def play():
 
 # intro()
 def intro():
-    print("\nYOU'RE BUILDING IS ON FIRE\n")
+    print("\nYOUR BUILDING IS ON FIRE\n")
     print("And so is your opponents...\n")
     print("You hate your opponet...\n")
     print("You can save your building... or destroy your opponents...\n")
