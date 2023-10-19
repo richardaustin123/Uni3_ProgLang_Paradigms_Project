@@ -5,10 +5,10 @@ hello_world :-
 
 
 % Player one building array
-playerOneBuilding([[ 1, 0, 0, 0, 1],    % 16. 17. 18. 19. 20. 
-                   [ 0, 1, 0, 1, 0],    % 11. 12. 13. 14. 15.
-                   [ 0, 1, 0, 1, 0],    % 6.  7.  8.  9.  10.
-                   [ 0, 0, 1, 0, 0]]).   % 1.  2.  3.  4.  5.
+playerOneBuilding([[ 0, 0, 0, 0, 0],    % 16. 17. 18. 19. 20. 
+                   [ 0, 0, 0, 0, 0],    % 11. 12. 13. 14. 15.
+                   [ 0, 0, 0, 0, 0],    % 6.  7.  8.  9.  10.
+                   [ 0, 0, 0, 0, 0]]).   % 1.  2.  3.  4.  5.
 
 % Player two building array
 playerTwoBuilding([[ 1, 0, 0, 0, 1],    % 16. 17. 18. 19. 20. 
@@ -35,7 +35,7 @@ intro :-
     display_both_buildings,
     format('Press enter to continue~n'),
     get_char(_),
-    format('These are the building numbers~n'),
+    format('~nThese are the building numbers~n'),
     display_building_numbers,
     format('~nPress enter to continue~n'),
     get_char(_).
@@ -59,7 +59,7 @@ display_building([BuildingFloor | RemainingFloors]) :-
     nl,                                     % New line
     display_building(RemainingFloors).                 % Loop back to print the remaining rows in the building
 
-% print_row(+row)
+%! print_row(+row)
 % Print a row of the building recursively by looping through each element (room number)
 print_row([]).
 
@@ -80,41 +80,82 @@ game_loop :-
     format('~nLets begin~n'),
     playerOneBuilding(PlayerOneBuilding),
     playerTwoBuilding(PlayerTwoBuilding),
-    check_winner(PlayerOneBuilding, PlayerTwoBuilding), !.
-    display_both_buildings.
+    check_winner(PlayerOneBuilding, PlayerTwoBuilding), !,
+    display_both_buildings, 
+    format('~nAyup~n').
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Check winner %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%! check_winner(+PlayerOneBuilding, +PlayerTwoBuilding)
+% Check if player one has won 
+% If fail, check_winner will run the next attempt below, for p2
 check_winner(PlayerOneBuilding, PlayerTwoBuilding) :-
     check_player_one_win(PlayerOneBuilding, PlayerTwoBuilding),
-    format('Player 1 wins~n').
+    format('Player 1 wins~n'), !.
 
+% Check if player two has won
+% If fail, check_winner will fail and the game will continue on the next attempt
 check_winner(PlayerOneBuilding, PlayerTwoBuilding) :-
     check_player_two_win(PlayerOneBuilding, PlayerTwoBuilding),
-    format('Player 2 wins~n').
+    format('Player 2 wins~n'), !.
 
+% If neither player has won, the game will continue
 check_winner(_PlayerOneBuilding, _PlayerTwoBuilding) :- !.
 
-check_player_one_win(PlayerOneBuilding, PlayerTwoBuilding) :-
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Check player win %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%! check_player_one_win(+PlayerOneBuilding, +PlayerTwoBuilding)
+% Check if player one has won by extinguishing their own building 
+check_player_one_win(PlayerOneBuilding, _PlayerTwoBuilding) :-
     building_extinguished(PlayerOneBuilding).
 
-check_player_one_win(PlayerOneBuilding, PlayerTwoBuilding) :-
+% Check if player one has won by burning down their opponents building
+check_player_one_win(_PlayerOneBuilding, PlayerTwoBuilding) :-
     building_in_flames(PlayerTwoBuilding).
 
-
-check_player_two_win(PlayerOneBuilding, PlayerTwoBuilding) :-
+%! check_player_two_win(+PlayerOneBuilding, +PlayerTwoBuilding)
+% Check if player two has won by extinguishing their own building
+check_player_two_win(_PlayerOneBuilding, PlayerTwoBuilding) :-
     building_extinguished(PlayerTwoBuilding).
 
-check_player_two_win(PlayerOneBuilding, PlayerTwoBuilding) :-
+% Check if player two has won by burning down their opponents building
+check_player_two_win(PlayerOneBuilding, _PlayerTwoBuilding) :-
     building_in_flames(PlayerOneBuilding).
 
-% building_extinguished(+buildingArray)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Building put out or on fire %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%! is_room_water(+buildingArray)
 % Check if building is all 1's (water)
-building_extinguished([]).
-building_extinguished([1 | Rest]) :- building_extinguished(Rest).
+is_room_water([]).                          % Base case
+is_room_water([1 | Rest]) :-                % If the current room is 1 (water)
+    is_room_water(Rest).                    % Loop back to check the rest of the building
 
-% building_in_flames(+buildingArray)
+% Check if a matrix contains all ones
+building_extinguished([]).                  % Base case
+building_extinguished([Row | Rest]) :-      % Separate the matrix (building) into the current row and the rest of the matrix
+    is_room_water(Row),                     % Check if the current row is all 1's (water)
+    building_extinguished(Rest).            % Loop back to check the rest of the building
+
+%! is_room_fire(+buildingArray)
 % Check if building is all 0's (fire)
-building_in_flames([]).
-building_in_flames([0 | Rest]) :- building_in_flames(Rest).
+is_room_fire([]).                           % Same as above but for 0's (fire)
+is_room_fire([0 | Rest]) :- 
+    is_room_fire(Rest).
 
+% Check if a matrix contains all ones
+building_in_flames([]).
+building_in_flames([Row | Rest]) :-
+    is_room_fire(Row),
+    building_in_flames(Rest).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Take turn %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%! take_turn(+PlayerOneBuilding, +PlayerTwoBuilding)
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start game %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 :- play.
