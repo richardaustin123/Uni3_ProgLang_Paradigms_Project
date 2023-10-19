@@ -31,23 +31,14 @@ intro :-
     format('1 = Water~n'),
     format('0 = Fire~n'),
     format('Press enter to start~n'),
+    get_char(_), % User input "_" as we dont care about the input here, no need for a variable 
     display_both_buildings,
     format('Press enter to continue~n'),
+    get_char(_),
     format('These are the building numbers~n'),
     display_building_numbers,
-    format('~nPress enter to continue~n').
-
-% display_building_numbers/0
-display_building_numbers :-
-    format('~n 16.  17.  18.  19.  20.~n'),
-    format(' 11.  12.  13.  14.  15.~n'),
-    format(' 6.   7.   8.   9.   10.~n'),
-    format(' 1.   2.   3.   4.   5.~n').
-
-% game_loop/0
-game_loop :-
-    format('~nLets begin~n').
-    % display_both_buildings.
+    format('~nPress enter to continue~n'),
+    get_char(_).
 
 % display_both_buildings/0
 % Print the building of both players
@@ -66,7 +57,7 @@ display_building([]).
 display_building([BuildingFloor | RemainingFloors]) :-
     print_row(BuildingFloor),               % Print the current row
     nl,                                     % New line
-    display_building(Rest).                 % Loop back to print the remaining rows in the building
+    display_building(RemainingFloors).                 % Loop back to print the remaining rows in the building
 
 % print_row(+row)
 % Print a row of the building recursively by looping through each element (room number)
@@ -76,6 +67,54 @@ print_row([RoomNumber | RemainingRooms]) :-
     write(RoomNumber),                      % Print the room number
     write(' '),                             % Print a space between the room number 
     print_row(RemainingRooms).              % Loop back to print the rest of the numebr in the row
+
+% display_building_numbers/0
+display_building_numbers :-
+    format('~n 16.  17.  18.  19.  20.~n'),
+    format(' 11.  12.  13.  14.  15.~n'),
+    format(' 6.   7.   8.   9.   10.~n'),
+    format(' 1.   2.   3.   4.   5.~n').
+
+% game_loop/0
+game_loop :-
+    format('~nLets begin~n'),
+    playerOneBuilding(PlayerOneBuilding),
+    playerTwoBuilding(PlayerTwoBuilding),
+    check_winner(PlayerOneBuilding, PlayerTwoBuilding), !.
+    display_both_buildings.
+
+check_winner(PlayerOneBuilding, PlayerTwoBuilding) :-
+    check_player_one_win(PlayerOneBuilding, PlayerTwoBuilding),
+    format('Player 1 wins~n').
+
+check_winner(PlayerOneBuilding, PlayerTwoBuilding) :-
+    check_player_two_win(PlayerOneBuilding, PlayerTwoBuilding),
+    format('Player 2 wins~n').
+
+check_winner(_PlayerOneBuilding, _PlayerTwoBuilding) :- !.
+
+check_player_one_win(PlayerOneBuilding, PlayerTwoBuilding) :-
+    building_extinguished(PlayerOneBuilding).
+
+check_player_one_win(PlayerOneBuilding, PlayerTwoBuilding) :-
+    building_in_flames(PlayerTwoBuilding).
+
+
+check_player_two_win(PlayerOneBuilding, PlayerTwoBuilding) :-
+    building_extinguished(PlayerTwoBuilding).
+
+check_player_two_win(PlayerOneBuilding, PlayerTwoBuilding) :-
+    building_in_flames(PlayerOneBuilding).
+
+% building_extinguished(+buildingArray)
+% Check if building is all 1's (water)
+building_extinguished([]).
+building_extinguished([1 | Rest]) :- building_extinguished(Rest).
+
+% building_in_flames(+buildingArray)
+% Check if building is all 0's (fire)
+building_in_flames([]).
+building_in_flames([0 | Rest]) :- building_in_flames(Rest).
 
 
 :- play.

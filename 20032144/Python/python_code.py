@@ -25,8 +25,6 @@ playerTwoWins = False
 playerOnesGo = True
 playerTwosGo = False
 gameOver = False
-col = 0
-row = 0
 
 # Player one building array
 playerOneBuilding = [[ 1, 0, 0, 0, 0],    # 16. 17. 18. 19. 20. 
@@ -74,26 +72,19 @@ def display_building_numbers():
 
 # game_loop()
 def game_loop():
-    global playerOneWins, playerTwoWins, playerOnesGo, playerTwosGo, gameOver, row, col # Global variables 
+    global playerOneWins, playerTwoWins, playerOnesGo, playerTwosGo, gameOver           # Global variables 
     while playerOneWins == False and playerTwoWins == False and gameOver == False:      # While no one has won
             display_both_buildings()                                                    # Display player one and two's buildings
             if playerOnesGo == True:                                                    # If it's player one's go   
-                take_turn("1", row, col)                                                # Take player one's turn
+                take_turn("1")                                                          # Take player one's turn
                 gameOver = check_winner(gameOver, playerOneWins, playerTwoWins)         # Check if player one has won
                 playerOnesGo = False                                                    # Set player one's go to false
                 playerTwosGo = True                                                     # Set player two's go to true
             elif playerTwosGo == True:                                                  # Same as above but for player two
-                take_turn("2", row, col)
+                take_turn("2")
                 gameOver = check_winner(gameOver, playerOneWins, playerTwoWins)
                 playerTwosGo = False
                 playerOnesGo = True
-
-# display_building(+buildingArray)
-# Print the building array with a given player's building
-def display_building(buildingArray):
-    for row in buildingArray:
-        print(' '.join(map(str, row)))
-    print("\n")
 
 # display_both_buildings()
 def display_both_buildings():
@@ -102,24 +93,33 @@ def display_both_buildings():
     print("Player 2's building\n")
     display_building(playerTwoBuilding)
 
-# take_turn(+player, +row, +col)
+# display_building(+buildingArray)
+# Print the building array with a given player's building
+def display_building(buildingArray):
+    for row in buildingArray:
+        print(' '.join(map(str, row))) # Print the row with a space between each number
+    print("\n")
+
+# take_turn(+player)
 # Each player takes a turn and their building is updated
-def take_turn(player, row, col):
+def take_turn(player):
     print("It's player " + player + "'s turn\n")
     print("Press 1 to spread water in your building or press 0 to spread fire on your opponent\n")
     waterOrFire = check_integer("Enter 1 or 0: \n")
-    roomNumber = check_integer("Which room do you chose (1-20): \n") # get the room number index position
-    row, col = update_building(roomNumber, row, col) # Get the row and column to be updated in the building array, based on the room number selected by the user
+    roomNumber = check_integer("Which room do you chose (1-20): \n") # Get the room number index position
+    row = 0
+    col = 0
+    row, col = update_building(roomNumber, row, col)    # Get the row and column to be updated in the building array, based on the room number selected by the user
     if player == "1":
         if waterOrFire == 1:
-            start_water_flow(playerOneBuilding, row, col)
+            spread_water(playerOneBuilding, row, col)   # If P1 chose water then spread water in P1's building
         elif waterOrFire == 0:
-            start_fire_flow(playerTwoBuilding, row, col)
+            spread_fire(playerTwoBuilding, row, col)    # If P1 chose fire then spread fire in P2's building
     elif player == "2":
         if waterOrFire == 1:
-            start_water_flow(playerTwoBuilding, row, col)
+            spread_water(playerTwoBuilding, row, col)   # If P2 chose water then spread water in P2's building
         elif waterOrFire == 0:
-            start_fire_flow(playerOneBuilding, row, col)
+            spread_fire(playerOneBuilding, row, col)    # If P2 chose fire then spread fire in P1's building
 
 # check_integer(+number)
 # Check if the user input is an integer
@@ -131,16 +131,6 @@ def check_integer(number):
         except ValueError:
             print("**************** Invalid input ****************\n")
 
-# start_water_flow(+buildingArray, +row, +col)
-def start_water_flow(buildingArray, row, col):
-    buildingArray[row][col] = 1
-    spread_water(buildingArray, col)
-
-# start_fire_flow(+buildingArray, +row, +col)
-def start_fire_flow(buildingArray, row, col):
-    buildingArray[row][col] = 0
-    spread_fire(buildingArray, col)
-
 # update_building(+roomNumber, -row, -col)
 # Get the row and column that needs to be updated in the building array, based on the room number selected by the player
 def update_building(roomNumber, row, col):
@@ -149,11 +139,12 @@ def update_building(roomNumber, row, col):
         col = (roomNumber - 1) % 5        # e.g. roomNumber = 13 so 13 - 1 = 12 % 5 = 2 so col = 2 which is the third column (0, 1, 2, 3, 4)
     return row, col
 
-# spread_water(+buildingArray, +column)
+# spread_water(+buildingArray, +row, +column)
 # Pass in the building (p1's or p2's) and in the column for the room number index the player selected
 # If player selected water (1) and there is a 1 above or below (two 1's on top of each other) 
 # then spread the water down the column
-def spread_water(buildingArray, column):
+def spread_water(buildingArray, row, column):
+    buildingArray[row][column] = 1
     flag = False
     # loop for each row
     for row in range(0, 4):
@@ -167,11 +158,12 @@ def spread_water(buildingArray, column):
         if(buildingArray[row][column] == 1):
             flag = True
 
-# spread_fire(+buildingArray, +column)
+# spread_fire(+buildingArray, +row, +column)
 # Pass in the building (p1's or p2's) and in the column for the room number index the player selected
 # If player selected fire (0) and there is a 0 above or below (two 0's on top of each other)
 # then spread the fire up the column
-def spread_fire(buildingArray, column):
+def spread_fire(buildingArray, row, column):
+    buildingArray[row][column] = 0
     flag = False
     # loop for each row
     for row in range(3, 0, -1):
