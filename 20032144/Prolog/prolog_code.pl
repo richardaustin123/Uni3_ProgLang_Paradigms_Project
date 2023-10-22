@@ -1,14 +1,14 @@
 % consult('/Users/richardaustin/Documents/GitHub/Uni3_ProgLang_Paradigms_Project/20032144/Prolog/prolog_code.pl').
 
-hello_world :- 
-    format('Hello World!~n').
+:- dynamic(current_turn/1).
+current_turn(1).
 
 
 % Player one building array
-playerOneBuilding([[ 0, 0, 0, 0, 0],    % 16. 17. 18. 19. 20. 
-                   [ 0, 0, 0, 0, 0],    % 11. 12. 13. 14. 15.
-                   [ 0, 0, 0, 0, 0],    % 6.  7.  8.  9.  10.
-                   [ 0, 0, 0, 0, 0]]).   % 1.  2.  3.  4.  5.
+playerOneBuilding([[ 1, 0, 0, 0, 0],    % 16. 17. 18. 19. 20. 
+                   [ 1, 0, 0, 0, 0],    % 11. 12. 13. 14. 15.
+                   [ 1, 0, 0, 0, 0],    % 6.  7.  8.  9.  10.
+                   [ 1, 0, 0, 0, 0]]).   % 1.  2.  3.  4.  5.
 
 % Player two building array
 playerTwoBuilding([[ 1, 0, 0, 0, 1],    % 16. 17. 18. 19. 20. 
@@ -30,14 +30,18 @@ intro :-
     format('You can save your building... or destroy your opponents...~n'),
     format('1 = Water~n'),
     format('0 = Fire~n'),
-    format('Press enter to start~n'),
+    format('Press enter to numbers~n'),
     get_char(_), % User input "_" as we dont care about the input here, no need for a variable 
+    format('If you stack two 1s on top of each other, then the water will flow down to all rooms directly below\n'),
+    format('If you stack two 0s on top of each other, then the fire will flow up to all rooms directly above\n'),
+    format('Press enter to continue~n'),
+    get_char(_),
     display_both_buildings,
     format('Press enter to continue~n'),
     get_char(_),
     format('~nThese are the building numbers~n'),
     display_building_numbers,
-    format('~nPress enter to continue~n'),
+    format('~nPress enter to start~n'),
     get_char(_).
 
 % display_both_buildings/0
@@ -80,9 +84,14 @@ game_loop :-
     format('~nLets begin~n'),
     playerOneBuilding(PlayerOneBuilding),
     playerTwoBuilding(PlayerTwoBuilding),
-    check_winner(PlayerOneBuilding, PlayerTwoBuilding), !,
     display_both_buildings, 
+    check_winner(PlayerOneBuilding, PlayerTwoBuilding), !,
+    whos_turn(Player),
+    take_turn(Player, PlayerOneBuilding, PlayerTwoBuilding),
     format('~nAyup~n').
+
+game_loop :-
+    game_loop.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Check winner %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %! check_winner(+PlayerOneBuilding, +PlayerTwoBuilding)
@@ -90,13 +99,15 @@ game_loop :-
 % If fail, check_winner will run the next attempt below, for p2
 check_winner(PlayerOneBuilding, PlayerTwoBuilding) :-
     check_player_one_win(PlayerOneBuilding, PlayerTwoBuilding),
-    format('Player 1 wins~n'), !.
+    format('Player 1 wins~n'),
+    halt.
 
 % Check if player two has won
 % If fail, check_winner will fail and the game will continue on the next attempt
 check_winner(PlayerOneBuilding, PlayerTwoBuilding) :-
     check_player_two_win(PlayerOneBuilding, PlayerTwoBuilding),
-    format('Player 2 wins~n'), !.
+    format('Player 2 wins~n'), 
+    halt.
 
 % If neither player has won, the game will continue
 check_winner(_PlayerOneBuilding, _PlayerTwoBuilding) :- !.
@@ -153,7 +164,84 @@ building_in_flames([Row | Rest]) :-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Take turn %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%! take_turn(+PlayerOneBuilding, +PlayerTwoBuilding)
+
+%! whos_turn(-Player)
+% Check whos turn it is
+whos_turn(Player) :-
+    current_turn(Player),               % Get the current player from memory
+    switch_turn.                        % Switch the player
+
+%! switch_turn
+switch_turn :-
+    retract(current_turn(Player)),      % Retract the current player from memory
+    NextPlayer is 3 - Player,           % Switch between 1 and 2 
+    assert(current_turn(NextPlayer)).   % Assert (store) the new player to memory
+
+
+%! take_turn(+Player, +PlayerOneBuilding, +PlayerTwoBuilding)
+take_turn(Player, PlayerOneBuilding, PlayerTwoBuilding) :-
+    format('~nIts player ~ws turn~n', [Player]),
+    % chose_fire_or_water(FireOrWater),
+    format('~nPress 1 for water or 0 for fire: ~n'),
+    get_char(FireOrWaterChar),
+    atom_number(FireOrWaterChar, FireOrWater),
+    trace,
+    format('Which room do you chose (1-20): '),
+    get_char(RoomNumberChar),
+    atom_number(RoomNumberChar, RoomNumber),
+    update_building(RoomNumber, Row, Col),
+    player_turn(Player, PlayerOneBuilding, PlayerTwoBuilding, FireOrWater, Row, Col),
+    display_both_buildings.
+
+%! chose_fire_or_water(-FireOrWater)
+chose_fire_or_water(FireOrWater) :-
+    format('~nPress 1 for water or 0 for fire: ~n'),
+    get_char(FireOrWaterChar),                  % Get the char the player inputs (other ways bugger it up on Mac for some reason)
+    atom_number(FireOrWaterChar, FireOrWater),  % Convert the char to an int
+    check_one_or_zero(FireOrWater).
+
+% If player doesnt enter 1 or 0, the first chose_fire_or_water will fail and will try again here
+% Which tells the player they inputted wrong and loops back to the first chose_fire_or_water
+chose_fire_or_water(FireOrWater) :-
+    format('~nIncorrect input~n'),
+    chose_fire_or_water(FireOrWater).
+
+%! check_one_or_zero(+FireOrWater)
+% Check if player inputs 1 or 0 on the attempt below 
+% If fail, the first instant of chose_fire_or_water will run the fail case above
+check_one_or_zero(1) :- !.
+
+% Check if player inputs 0
+check_one_or_zero(0) :- !.
+
+%! update_building(+RoomNumber, -Row, -Col)
+% Get the row and column of the room number
+update_building(RoomNumber, Row, Col) :-
+    Row is 3 - (RoomNumber - 1) // 5,
+    Col is (RoomNumber - 1) mod 5.
+
+%! player_turn(+Player, +PlayerOneBuilding, +PlayerTwoBuilding, +FireOrWater, +Row, +Col)
+player_turn(1, PlayerOneBuilding, _, 1, Row, Col) :-
+    spread_water(PlayerOneBuilding, Row, Col, NewPlayerOneBuilding),
+    PlayerOneBuilding = NewPlayerOneBuilding.
+
+player_turn(1, _, PlayerTwoBuilding, 0, Row, Col) :-
+    spread_fire(PlayerTwoBuilding, Row, Col, NewPlayerTwoBuilding),
+    PlayerTwoBuilding = NewPlayerTwoBuilding.
+
+player_turn(2, _, PlayerTwoBuilding, 1, Row, Col) :-
+    spread_water(PlayerTwoBuilding, Row, Col, NewPlayerTwoBuilding),
+    PlayerTwoBuilding = NewPlayerTwoBuilding.
+
+player_turn(2, PlayerOneBuilding, _, 0, Row, Col) :-
+    spread_fire(PlayerOneBuilding, Row, Col, NewPlayerOneBuilding),
+    PlayerOneBuilding = NewPlayerOneBuilding.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Spread water %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start game %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

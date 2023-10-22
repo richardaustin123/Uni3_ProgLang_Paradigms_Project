@@ -56,12 +56,15 @@ def intro():
     print("You can save your building... or destroy your opponents...\n")
     print("1 = Water")
     print("0 = Fire\n")
-    print(input("Press enter to start\n"))
+    print(input("Press enter to continue\n"))
+    print("If you stack two 1's on top of each other, then the water will flow down to all rooms directly below\n")
+    print("If you stack two 0's on top of each other, then the fire will flow up to all rooms directly above\n")
+    print(input("Press enter to continue\n"))
     display_both_buildings()
     print(input("Press enter to continue\n"))
     print("These are the building numbers\n")
     display_building_numbers()
-    print(input("Press enter to continue\n"))
+    print(input("Press enter to start\n"))
 
 # display_building_numbers()
 def display_building_numbers():
