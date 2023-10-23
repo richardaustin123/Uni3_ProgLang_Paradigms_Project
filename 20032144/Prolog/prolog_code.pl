@@ -87,8 +87,7 @@ game_loop :-
     display_both_buildings, 
     check_winner(PlayerOneBuilding, PlayerTwoBuilding), !,
     whos_turn(Player),
-    take_turn(Player, PlayerOneBuilding, PlayerTwoBuilding),
-    format('~nAyup~n').
+    take_turn(Player, PlayerOneBuilding, PlayerTwoBuilding).
 
 game_loop :-
     game_loop.
@@ -181,12 +180,13 @@ switch_turn :-
 %! take_turn(+Player, +PlayerOneBuilding, +PlayerTwoBuilding)
 take_turn(Player, PlayerOneBuilding, PlayerTwoBuilding) :-
     format('~nIts player ~ws turn~n', [Player]),
-    % chose_fire_or_water(FireOrWater),
     format('~nPress 1 for water or 0 for fire: ~n'),
     get_char(FireOrWaterChar),
+    format('~nPress enter~n'),
+    get_char(_),
     atom_number(FireOrWaterChar, FireOrWater),
-    trace,
-    format('Which room do you chose (1-20): '),
+    get_char(_),
+    format('~nChoose a room to spread to: ~n'),
     get_char(RoomNumberChar),
     atom_number(RoomNumberChar, RoomNumber),
     update_building(RoomNumber, Row, Col),
@@ -196,23 +196,24 @@ take_turn(Player, PlayerOneBuilding, PlayerTwoBuilding) :-
 %! chose_fire_or_water(-FireOrWater)
 chose_fire_or_water(FireOrWater) :-
     format('~nPress 1 for water or 0 for fire: ~n'),
-    get_char(FireOrWaterChar),                  % Get the char the player inputs (other ways bugger it up on Mac for some reason)
-    atom_number(FireOrWaterChar, FireOrWater),  % Convert the char to an int
-    check_one_or_zero(FireOrWater).
+    get_char(FireOrWaterChar),                          % Get the char the player inputs (other ways bugger it up on Mac for some reason)
+    get_char(_),
+    (FireOrWaterChar = '0' ; FireOrWaterChar = '1'),    % Convert the char to an int
+    atom_number(FireOrWaterChar, FireOrWater).  
 
 % If player doesnt enter 1 or 0, the first chose_fire_or_water will fail and will try again here
 % Which tells the player they inputted wrong and loops back to the first chose_fire_or_water
-chose_fire_or_water(FireOrWater) :-
-    format('~nIncorrect input~n'),
-    chose_fire_or_water(FireOrWater).
+% chose_fire_or_water(FireOrWater) :-
+%     format('~nIncorrect input~n'),
+%     chose_fire_or_water(FireOrWater).
 
 %! check_one_or_zero(+FireOrWater)
 % Check if player inputs 1 or 0 on the attempt below 
 % If fail, the first instant of chose_fire_or_water will run the fail case above
-check_one_or_zero(1) :- !.
+% check_one_or_zero(1) :- !.
 
 % Check if player inputs 0
-check_one_or_zero(0) :- !.
+% check_one_or_zero(0) :- !.
 
 %! update_building(+RoomNumber, -Row, -Col)
 % Get the row and column of the room number
