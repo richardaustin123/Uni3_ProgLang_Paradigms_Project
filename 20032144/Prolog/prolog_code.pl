@@ -237,11 +237,69 @@ player_turn(2, PlayerOneBuilding, _, 0, Row, Col) :-
     spread_fire(PlayerOneBuilding, Row, Col, NewPlayerOneBuilding),
     PlayerOneBuilding = NewPlayerOneBuilding.
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Spread water %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%! spread_water(+Building, +Row, +Col, -NewBuilding)
+% If on the bottom row, this predicate will run and replace only the room they chose
+spread_water(Building, Row, Col, NewBuilding) :-
+    check_already_on_bottom_row(Row),
+    replace([Row, Col], Building, 1, NewBuilding).
+
+% Spread water to the room below recursively if not on the bottom row
+spread_water(Building, Row, Col, NewBuilding) :-
+    not(check_already_on_bottom_row(Row)),                  % Check if we're not on the bottom row
+    replace([Row, Col], Building, 1, TempBuilding), % Spread water to the current room
+    NextRow is Row + 1,
+    spread_water(TempBuilding, NextRow, Col, NewBuilding).
 
 
+%! check_already_on_bottom_row(+Row)
+% Check if the room is on the bottom row
+% Cant spread water down if already on the bottom row
+check_already_on_bottom_row(Row) :-
+    Row = 3.
 
+%! replace(+[RowIndex, ColIndex], +Building, +ReplaceWith, -NewBuilding)
+replace([RowIndex, ColIndex], Building, ReplaceWith, NewBuilding) :-
+    replace_in_row(RowIndex, ColIndex, Building, ReplaceWith, NewBuilding).
+
+%! replace_in_row(+RowIndex, +ColIndex, +Building, +ReplaceWith, -NewBuilding)
+replace_in_row(0, ColIndex, [Row|Rest], ReplaceWith, [NewRow|Rest]) :-
+    replace_in_col(ColIndex, Row, ReplaceWith, NewRow).
+
+replace_in_row(RowIndex, ColIndex, [Row|Rest], ReplaceWith, [Row|NewRest]) :-
+    RowIndex > 0,
+    NextRowIndex is RowIndex - 1,
+    replace_in_row(NextRowIndex, ColIndex, Rest, ReplaceWith, NewRest).
+
+%! replace_in_col(+ColIndex, +Row, +ReplaceWith, -NewRow)
+replace_in_col(0, [_|Rest], ReplaceWith, [ReplaceWith|Rest]).
+
+replace_in_col(ColIndex, [X|Rest], ReplaceWith, [X|NewRest]) :-
+    ColIndex > 0,
+    NextColIndex is ColIndex - 1,
+    replace_in_col(NextColIndex, Rest, ReplaceWith, NewRest).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Spread fire %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%! spread_fire(+Building, +Row, +Col, -NewBuilding)
+% If on the top row, this predicate will run and replace only the room they chose
+spread_fire(Building, Row, Col, NewBuilding) :-
+    check_already_on_top_row(Row),
+    replace([Row, Col], Building, 0, NewBuilding).
+
+% Spread fire to the room above recursively if not on the top row
+spread_fire(Building, Row, Col, NewBuilding) :-
+    not(check_already_on_top_row(Row)),
+    replace([Row, Col], Building, 0, TempBuilding),
+    NextRow is Row - 1,
+    spread_fire(TempBuilding, NextRow, Col, NewBuilding).
+
+%! check_already_on_top_row(+Row)
+check_already_on_top_row(Row) :-
+    Row = 0.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start game %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
