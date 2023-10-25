@@ -111,13 +111,15 @@ do_we_have_buidlings(BuildingOne, BuildingTwo) :-
 % If fail, check_winner will run the next attempt below, for p2
 check_winner(PlayerOneBuilding, PlayerTwoBuilding) :-
     check_player_one_win(PlayerOneBuilding, PlayerTwoBuilding),
-    format('Player 1 wins~n').
+    format('Player 1 wins~n'),
+    abort.
 
 % Check if player two has won
 % If fail, check_winner will fail and the game will continue on the next attempt
 check_winner(PlayerOneBuilding, PlayerTwoBuilding) :-
     check_player_two_win(PlayerOneBuilding, PlayerTwoBuilding),
-    format('Player 2 wins~n').
+    format('Player 2 wins~n'),
+    abort.
 
 % If neither player has won, the game will continue
 check_winner(_PlayerOneBuilding, _PlayerTwoBuilding) :- !.
@@ -251,25 +253,39 @@ spread_water(Building, Row, Col, NewBuilding) :-
     check_already_on_bottom_row(Row),
     replace([Row, Col], Building, 1, NewBuilding).
 
-% Recursive case: Spread water to the room below and continue recursion
+% Spread water to the room below and continue recursion 
+% If the room aboev or below is water (1)
 spread_water(Building, Row, Col, NewBuilding) :-
     not(check_already_on_bottom_row(Row)),                          % Check if we're not on the bottom row
+    room_above_below(Building, Row, Col, 1),                        % If room above or below is 1 (water)
     replace([Row, Col], Building, 1, IntermediateBuilding),         % Spread water to the current room (replace with a 1)
     NextRow is Row + 1,                                             % Increment the row index (move to the next row/floor of the building)
     spread_water(IntermediateBuilding, NextRow, Col, NewBuilding).  % Loop back to spread water to the next room
 
+% Spread water to only the current room as the room above or below is not water (0)
+spread_water(Building, Row, Col, NewBuilding) :-
+    replace([Row, Col], Building, 1, NewBuilding).
+
 %%%%%%%%%%%% Fire %%%%%%%%%%%%
 
 % spread_fire(+Building, +Row, +Col, -NewBuilding)
+% If on the top row, this predicate will run and replace only the room they chose on the top row
 spread_fire(Building, Row, Col, NewBuilding) :-
     check_already_on_top_row(Row),                                  % Check if we're on the top row
     replace([Row, Col], Building, 0, NewBuilding).                  % If we are, replace only the room with fire (0)
 
+% Spread fire to the room above with recursion
+% If a room above or below is fire (0)
 spread_fire(Building, Row, Col, NewBuilding) :-
-    not(check_already_on_top_row(Row)),                             % Check if we're not on the top row                  
+    not(check_already_on_top_row(Row)),                             % Check if we're not on the top row              
+    room_above_below(Building, Row, Col, 0),                        % If room above or below is 0 (fire)    
     replace([Row, Col], Building, 0, TempBuilding),                 % Replace the current room with fire (0)
     NextRow is Row - 1,                                             % Decrement the row index (move to the next row/floor of the building)
     spread_fire(TempBuilding, NextRow, Col, NewBuilding).   
+
+% Replace water with fire (1 with 0) only to the current room if a room above or below is not fire (0)
+spread_fire(Building, Row, Col, NewBuilding) :-
+    replace([Row, Col], Building, 0, NewBuilding).
 
 % check_already_on_bottom_row(+Row)
 % Check if the room is on the bottom row
@@ -277,11 +293,24 @@ spread_fire(Building, Row, Col, NewBuilding) :-
 check_already_on_bottom_row(Row) :-
     Row = 3.
 
-%
+% check_already_on_top_row(+Row)
 % Check if the room is on the top row
 % Cant spread fire up if already on the top row
 check_already_on_top_row(Row) :-
     Row = 0.
+
+% room_above_below(+Building, +Row, +Col, -Value)
+% Check if the room below is the chosen value (1 or 0)
+room_above_below(Building, Row, Col, Value) :-
+    NextRow is Row + 1,
+    nth0(NextRow, Building, RowList),
+    nth0(Col, RowList, Value), !.
+
+% Chcek if the room above is the chosen value (1 or 0)
+room_above_below(Building, Row, Col, Value) :-
+    NextRow is Row - 1,
+    nth0(NextRow, Building, RowList),
+    nth0(Col, RowList, Value), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Replace rooms with water or fire %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

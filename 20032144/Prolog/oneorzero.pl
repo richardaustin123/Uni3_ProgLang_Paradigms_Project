@@ -44,4 +44,9 @@ check_one_or_zero(0) :- !.
 
     % (InputChar = '1' ; InputChar = '0')
 
-:- whatnumber.
+% :- whatnumber.
+
+
+element_at(Matrix, Row, Col, Value) :-
+    nth0(Row, Matrix, RowList),
+    nth0(Col, RowList, Value).
