@@ -1,23 +1,4 @@
-# Fire building game
 
-#    P1 Builing            
-# [ 0, 1, 1, 1, 0],    # 16. 17. 18. 19. 20. 
-
-# [ 1, 0, 1, 0, 1],    # 11. 12. 13. 14. 15.
-
-# [ 1, 0, 1, 0, 1],    # 6.  7.  8.  9.  10.
-
-# [ 0, 1, 1, 1, 0]]    # 1.  2.  3.  4.  5.
-
-
-#    P2 Building          
-# [ 0, 1, 1, 1, 0],    # 16. 17. 18. 19. 20. 
-
-# [ 1, 0, 1, 0, 1],    # 11. 12. 13. 14. 15.
-
-# [ 1, 0, 1, 0, 1],    # 6.  7.  8.  9.  10.
-
-# [ 0, 1, 1, 1, 0]]    # 1.  2.  3.  4.  5.
 
 # Global variables
 playerOneWins = False
@@ -27,10 +8,10 @@ playerTwosGo = False
 gameOver = False
 
 # Player one building array
-playerOneBuilding = [[ 1, 0, 0, 0, 0],    # 16. 17. 18. 19. 20. 
-                     [ 1, 0, 0, 0, 0],    # 11. 12. 13. 14. 15.
-                     [ 1, 0, 0, 0, 0],    # 6.  7.  8.  9.  10.
-                     [ 1, 0, 0, 0, 0]]    # 1.  2.  3.  4.  5.
+playerOneBuilding = [[ 1, 0, 0, 0, 1],    # 16. 17. 18. 19. 20. 
+                     [ 0, 1, 0, 1, 0],    # 11. 12. 13. 14. 15.
+                     [ 0, 1, 0, 1, 0],    # 6.  7.  8.  9.  10.
+                     [ 0, 0, 1, 0, 0]]    # 1.  2.  3.  4.  5.
 
 # Player two building array
 playerTwoBuilding = [[ 1, 0, 0, 0, 1],    # 16. 17. 18. 19. 20. 
@@ -50,6 +31,7 @@ def play():
 
 # intro()
 def intro():
+    print("\Welcome to Saviour vs Scorcher\n")
     print("\nYOUR BUILDING IS ON FIRE\n")
     print("And so is your opponents...\n")
     print("You hate your opponet...\n")

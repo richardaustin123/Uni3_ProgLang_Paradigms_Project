@@ -1,7 +1,9 @@
-:- dynamic(current_turn/1).
+% dynamic variables we can chnage 
+:- dynamic(current_turn/1). 
 :- dynamic(buildingOne/1).
 :- dynamic(buildingTwo/1).
 
+% Start the game with player one
 current_turn(1).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Starting buildings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -26,24 +28,22 @@ play :-
 % intro/0
 % Into the game
 intro :-
+    format('Welcome to Saviour vs Scorcher~n'),
     format('~nYOUR BUILDING IS ON FIRE~n'),
     format('And so is your opponents...~n'),
     format('You hate your opponet...~n'),
     format('You can save your building... or destroy your opponents...~n'),
     format('1 = Water~n'),
     format('0 = Fire~n'),
-    format('Press enter to numbers~n'),
+    format('Press ; to continue~n'),
     read(_), % User input "_" as we dont care about the input here, no need for a variable 
     format('If you stack two 1s on top of each other, then the water will flow down to all rooms directly below\n'),
     format('If you stack two 0s on top of each other, then the fire will flow up to all rooms directly above\n'),
-    format('Press enter to continue~n'),
+    format('Press ; to continue~n'),
     read(_),
-    % display_both_buildings,
-    % format('Press enter to continue~n'),
-    % read(_),
     format('~nThese are the building numbers~n'),
     display_building_numbers,
-    format('~nPress enter to start~n'),
+    format('~nPress ; to start~n'),
     read(_).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Display buildings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -51,30 +51,30 @@ intro :-
 % display_both_buildings(+BuildingOne, +BuildingTwo)
 % Print the building of both players
 display_both_buildings(BuildingOne, BuildingTwo) :-
-    % buildingOne(BuildingOne),               % Get the building of player one from memory 
-    % buildingTwo(BuildingTwo),               % Get the building of player two from memory
+    % buildingOne(BuildingOne),                 % Get the building of player one from memory 
+    % buildingTwo(BuildingTwo),                 % Get the building of player two from memory
     format('~nPlayer One Building:~n'),     
-    display_building(BuildingOne),          % Print player one building
+    display_building(BuildingOne),              % Print player one building
     format('~nPlayer Two Building:~n'),
-    display_building(BuildingTwo).          % Print player two building
+    display_building(BuildingTwo).              % Print player two building
 
 % display_building(+Building)
 % Print the building recursively by looping through each row
 display_building([]).
 
 display_building([BuildingFloor | RemainingFloors]) :-
-    print_row(BuildingFloor),               % Print the current row
-    nl,                                     % New line
-    display_building(RemainingFloors).      % Loop back to print the remaining rows in the building
+    print_row(BuildingFloor),                   % Print the current row
+    nl,                                         % New line
+    display_building(RemainingFloors).          % Loop back to print the remaining rows in the building
 
 % print_row(+Row)
 % Print a row of the building recursively by looping through each element (room number)
 print_row([]).
 
 print_row([RoomNumber | RemainingRooms]) :-
-    write(RoomNumber),                      % Print the room number
-    write(' '),                             % Print a space between the room number 
-    print_row(RemainingRooms).              % Loop back to print the rest of the numebr in the row
+    write(RoomNumber),                          % Print the room number
+    write(' '),                                 % Print a space between the room number 
+    print_row(RemainingRooms).                  % Loop back to print the rest of the numebr in the row
 
 % display_building_numbers/0
 display_building_numbers :-
@@ -337,6 +337,4 @@ replace_in_col(ColIndex, [X|Rest], ReplaceWith, [X|NewRest]) :-
     ColIndex > 0,                                                               % If the column index is greater than 0 (not at the top) 
     NextColIndex is ColIndex - 1,                                               % Decrement the column index (move to the next column)
     replace_in_col(NextColIndex, Rest, ReplaceWith, NewRest).                   % Loop back to replace the room in the next column
-    
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start game on load %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
