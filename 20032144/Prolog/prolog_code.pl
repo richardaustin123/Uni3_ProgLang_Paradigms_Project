@@ -23,14 +23,14 @@ current_turn(1).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Starting buildings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 buildingOne([   [ 1, 0, 0, 0, 1],    % 16. 17. 18. 19. 20. 
-                [ 0, 1, 1, 1, 0],    % 11. 12. 13. 14. 15.
-                [ 0, 0, 0, 0, 0],    % 6.  7.  8.  9.  10.
-                [ 0, 0, 1, 0, 0]]).   % 1.  2.  3.  4.  5.
+                [ 0, 1, 0, 1, 0],    % 11. 12. 13. 14. 15.
+                [ 0, 0, 1, 0, 0],    % 6.  7.  8.  9.  10.
+                [ 0, 0, 1, 1, 0]]).   % 1.  2.  3.  4.  5.
 
 buildingTwo([   [ 1, 0, 0, 0, 1],    % 16. 17. 18. 19. 20. 
-                [ 0, 1, 1, 1, 0],    % 11. 12. 13. 14. 15.
-                [ 0, 0, 0, 0, 0],    % 6.  7.  8.  9.  10.
-                [ 0, 0, 1, 0, 0]]).   % 1.  2.  3.  4.  5.
+                [ 0, 1, 0, 1, 0],    % 11. 12. 13. 14. 15.
+                [ 0, 0, 1, 0, 0],    % 6.  7.  8.  9.  10.
+                [ 0, 0, 1, 1, 0]]).   % 1.  2.  3.  4.  5.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start game %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -345,7 +345,7 @@ replace_in_row(RowIndex, ColIndex, [Row|Rest], ReplaceWith, [Row|NewRest]) :-
 % Replace the room in column calcualted in the 'update_building' predicate with a 0 or 1 (fire or water)
 replace_in_col(0, [_|Rest], ReplaceWith, [ReplaceWith|Rest]).
 
-replace_in_col(ColIndex, [X|Rest], ReplaceWith, [X|NewRest]) :-
+replace_in_col(ColIndex, [X1|Rest], ReplaceWith, [X|NewRest]) :-
     ColIndex > 0,                                                               % If the column index is greater than 0 (not at the top) 
     NextColIndex is ColIndex - 1,                                               % Decrement the column index (move to the next column)
     replace_in_col(NextColIndex, Rest, ReplaceWith, NewRest).                   % Loop back to replace the room in the next column

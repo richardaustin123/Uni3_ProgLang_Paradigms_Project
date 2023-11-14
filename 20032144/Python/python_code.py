@@ -34,7 +34,7 @@ def intro():
     print("\Welcome to Saviour vs Scorcher\n")
     print("\nYOUR BUILDING IS ON FIRE\n")
     print("And so is your opponents...\n")
-    print("You hate your opponet...\n")
+    print("You hate your opponent...\n")
     print("You can save your building... or destroy your opponents...\n")
     print("1 = Water")
     print("0 = Fire\n")
