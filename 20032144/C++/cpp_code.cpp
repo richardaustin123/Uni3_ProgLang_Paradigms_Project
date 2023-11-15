@@ -90,6 +90,7 @@ public:
     bool playerOnesGo = true;
     bool playerTwosGo = false;
 
+    // displayBothBuildings()
     void displayBothBuildings() {
         cout << "Player One's Building: " << endl;
         playerOneBuilding.displayBuilding();
@@ -99,6 +100,7 @@ public:
         cout << endl;
     }
 
+    // gameLoop()
     void gameLoop() {
         while (!gameOver) {
             check_winner();
@@ -116,6 +118,7 @@ public:
         }
     }
 
+    // check_winner()
     void check_winner() {
         if(check_player_win(playerOneBuilding)) {
             cout << "Player One wins" << endl;
@@ -127,6 +130,8 @@ public:
         }
     }
 
+    // check_player_win(+building)
+    // Pass in a player's building and see if their building is all 1s or all 0s
     bool check_player_win(Building playerBuidling) {
         bool allOnes = true;
         bool allZeros = true;
@@ -143,40 +148,63 @@ public:
         return allOnes || allZeros;
     }
 
+    // take_turn()
     void take_turn(string player) {
         cout << "It's Player " << player << "'s turn\n";
-        cout << "Press 1 to spread water in your building or press 0 to spread fire on your opponent\n";
-        cout << "Enter 1 or 0: ";
-        cin >> waterOrFire;
-        cout << "Which room do you chose (1-20): ";
-        cin >> roomNumber;
+        choose_water_or_fire();
         get_row_col(roomNumber, row, col);
 
         if (player == "1") {
             if (waterOrFire == 1) {
-                // playerOneBuilding.updateBuilding(row, col, waterOrFire);
                 playerOneBuilding.spread_water(row, col);
             } else if (waterOrFire == 0) {
-                // playerTwoBuilding.updateBuilding(row, col, waterOrFire);
                 playerTwoBuilding.spread_fire(row, col);
             } 
         } else if (player == "2") {
             if (waterOrFire == 1) {
-                // playerTwoBuilding.updateBuilding(row, col, waterOrFire);
                 playerTwoBuilding.spread_water(row, col);
             } else if (waterOrFire == 0) {
-                // playerOneBuilding.updateBuilding(row, col, waterOrFire);
                 playerOneBuilding.spread_fire(row, col);
             }
         }
     }
 
-    void get_row_col(int roomNumber, int& row, int& col) {
-        if (roomNumber < 1 || roomNumber > 20) {
-            cout << "Invalid room number\n";
+    // choose_water_or_fire()
+    void choose_water_or_fire() {
+        cout << "Press 1 to spread water in your building or press 0 to spread fire on your opponent\n";
+        bool validInput = false;
+        while (validInput == false) {
+            cout << "Enter 1 or 0: ";
+            cin >> waterOrFire;
+            if (waterOrFire == 1) {
+                break;
+                validInput = true;
+            } else if (waterOrFire == 0) {
+                break;
+                validInput = true;
+            } else {
+                cout << "Invalid number\n";
+                validInput = false;
+            }
         }
-        row = 3 - (roomNumber - 1) / 5;
-        col = (roomNumber - 1) % 5;
+    }
+
+    // get_row_col()
+    // Get the row and column from the room number the player chose
+    void get_row_col(int roomNumber, int& row, int& col) {
+        bool validInput = false;
+        while (validInput == false) {
+            cout << "Which room do you chose (1-20): ";
+            cin >> roomNumber;
+            if (roomNumber < 1 || roomNumber > 20) {
+                cout << "Invalid room number\n";
+            } else {
+                row = 3 - (roomNumber - 1) / 5;
+                col = (roomNumber - 1) % 5;
+                validInput = true;
+                break;
+            }
+        }
     }
 
 };
