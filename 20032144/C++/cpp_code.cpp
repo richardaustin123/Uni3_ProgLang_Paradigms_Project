@@ -40,6 +40,38 @@ public:
         }
     }
 
+    void spread_water(int row, int col) {
+        building[row][col] = 1;
+        bool flag = false;
+        for (int i = 0; i < 4; i++) {
+            if (flag && building[i][col] == 1) {
+                for (int waterRow = i; waterRow < 4; waterRow++) {
+                    building[waterRow][col] = 1;
+                }
+                return;
+            }
+            if (building[i][col] == 1) {
+                flag = true;
+            }
+        }
+    }
+
+    void spread_fire(int row, int col) {
+        building[row][col] = 0;
+        bool flag = false;
+        for (int i = 3; i >= 0; i--) {
+            if (flag && building[i][col] == 0) {
+                for (int fireRow = i; fireRow >= 0; fireRow--) {
+                    building[fireRow][col] = 0;
+                }
+                return;
+            }
+            if (building[i][col] == 0) {
+                flag = true;
+            }
+        }
+    }
+
     int building[4][5];
 };
 
@@ -85,41 +117,25 @@ public:
     }
 
     void check_winner() {
-        if(check_player_one_win()) {
+        if(check_player_win(playerOneBuilding)) {
             cout << "Player One wins" << endl;
             gameOver = true;
         }
-        if(check_player_two_win()) {
+        if(check_player_win(playerTwoBuilding)) {
             cout << "Player Two wins" << endl;
             gameOver = true;
         }
     }
 
-    bool check_player_one_win() {
+    bool check_player_win(Building playerBuidling) {
         bool allOnes = true;
         bool allZeros = true;
         for(int i=0; i<4; i++) {
             for(int j=0; j<5; j++) {
-                if(playerOneBuilding.building[i][j] != 1) {
+                if(playerBuidling.building[i][j] != 1) {
                     allOnes = false;
                 }
-                if(playerTwoBuilding.building[i][j] != 0) {
-                    allZeros = false;
-                }
-            }
-        }
-        return allOnes || allZeros;
-    }
-
-    bool check_player_two_win() {
-        bool allOnes = true;
-        bool allZeros = true;
-        for(int i=0; i<4; i++) {
-            for(int j=0; j<5; j++) {
-                if(playerTwoBuilding.building[i][j] != 1) {
-                    allOnes = false;
-                }
-                if(playerOneBuilding.building[i][j] != 0) {
+                if(playerBuidling.building[i][j] != 0) {
                     allZeros = false;
                 }
             }
@@ -138,15 +154,19 @@ public:
 
         if (player == "1") {
             if (waterOrFire == 1) {
-                playerOneBuilding.updateBuilding(row, col, waterOrFire);
+                // playerOneBuilding.updateBuilding(row, col, waterOrFire);
+                playerOneBuilding.spread_water(row, col);
             } else if (waterOrFire == 0) {
-                playerTwoBuilding.updateBuilding(row, col, waterOrFire);
+                // playerTwoBuilding.updateBuilding(row, col, waterOrFire);
+                playerTwoBuilding.spread_fire(row, col);
             } 
         } else if (player == "2") {
             if (waterOrFire == 1) {
-                playerTwoBuilding.updateBuilding(row, col, waterOrFire);
+                // playerTwoBuilding.updateBuilding(row, col, waterOrFire);
+                playerTwoBuilding.spread_water(row, col);
             } else if (waterOrFire == 0) {
-                playerOneBuilding.updateBuilding(row, col, waterOrFire);
+                // playerOneBuilding.updateBuilding(row, col, waterOrFire);
+                playerOneBuilding.spread_fire(row, col);
             }
         }
     }
