@@ -2,6 +2,7 @@
 
 using namespace std;
 
+// Building class
 class Building {
 public:
     Building() {
@@ -18,13 +19,15 @@ public:
         // {1, 1, 1, 1, 1},
         // {0, 1, 1, 1, 1}
 
+        // Set the building array to the starting building
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 5; j++) {
-                building[i][j] = startingBuilding[i][j];
+                building[i][j] = startingBuilding[i][j]; 
             }
         }
     }
 
+    // displayBuilding()
     void displayBuilding() {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 5; j++) {
@@ -34,12 +37,9 @@ public:
         }
     }
 
-    void updateBuilding(int row, int col, int waterOrFire) {
-        if (row >= 0 && row < 4 && col >= 0 && col < 5) {
-            building[row][col] = waterOrFire;
-        }
-    }
-
+    // spread_water(+row, +col)
+    // Spread water down from the row and column of the chosen room
+    // if above or below is a 1
     void spread_water(int row, int col) {
         building[row][col] = 1;
         bool flag = false;
@@ -56,6 +56,9 @@ public:
         }
     }
 
+    // spread_fire(+row, +col)
+    // Spread fire up from the row and column of the chosen room
+    // if above or below is a 0 
     void spread_fire(int row, int col) {
         building[row][col] = 0;
         bool flag = false;
@@ -72,14 +75,18 @@ public:
         }
     }
 
+    // building array, 4 rows, 5 columns
     int building[4][5];
 };
 
+// Game class
 class Game {
+// Building objects
 private:
     Building playerOneBuilding;
     Building playerTwoBuilding;
 
+// Variables
 public:
     string player; 
     int roomNumber, row, col;
@@ -209,6 +216,8 @@ public:
 
 };
 
+// main()
+// Create a game instance and call the gameLoop() function
 int main() {
     Game gameInstance;
     gameInstance.gameLoop();
