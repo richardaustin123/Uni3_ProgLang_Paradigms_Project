@@ -27,8 +27,8 @@ public:
         }
     }
 
-    // displayBuilding()
-    void displayBuilding() {
+    // display_building()
+    void display_building() {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 5; j++) {
                 cout << building[i][j] << " ";
@@ -97,21 +97,21 @@ public:
     bool playerOnesGo = true;
     bool playerTwosGo = false;
 
-    // displayBothBuildings()
-    void displayBothBuildings() {
+    // display_both_buildings()
+    void display_both_buildings() {
         cout << "Player One's Building: " << endl;
-        playerOneBuilding.displayBuilding();
+        playerOneBuilding.display_building();
         cout << endl;
         cout << "Player Two's Building: " << endl;
-        playerTwoBuilding.displayBuilding();
+        playerTwoBuilding.display_building();
         cout << endl;
     }
 
-    // gameLoop()
-    void gameLoop() {
+    // game_loop()
+    void game_loop() {
         while (!gameOver) {
             check_winner();
-            displayBothBuildings();
+            display_both_buildings();
             if (playerOnesGo) {
                 take_turn("1");
                 playerOnesGo = false;
@@ -217,10 +217,10 @@ public:
 };
 
 // main()
-// Create a game instance and call the gameLoop() function
+// Create a game instance and call the game_loop() function
 int main() {
     Game gameInstance;
-    gameInstance.gameLoop();
+    gameInstance.game_loop();
 
     return 0;
 }
