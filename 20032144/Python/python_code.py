@@ -133,8 +133,8 @@ def spread_water(buildingArray, row, column):
     flag = False
     # loop for each row
     for row in range(0, 4):
-        # check the flag
-        if(flag == True and buildingArray[row][column] == 1):
+        # check the flag (flag true when we are water and we have found another water)
+        if(flag == True and buildingArray[row][column] == 1): 
             # flow the water down the building column
             for waterRow in range(row, 4):
                 buildingArray[waterRow][column] = 1 # set that row and column index to 1

@@ -159,12 +159,12 @@ public:
 
     // check_winner()
     void check_winner() {
-        if(check_player_win(playerOneBuilding)) {
+        if(check_player_win(playerOneBuilding, playerTwoBuilding)) {
             cout << "Player One wins" << endl;
             display_both_buildings();
             gameOver = true;
         }
-        if(check_player_win(playerTwoBuilding)) {
+        if(check_player_win(playerTwoBuilding, playerOneBuilding)) {
             cout << "Player Two wins" << endl;
             display_both_buildings();
             gameOver = true;
@@ -173,15 +173,15 @@ public:
 
     // check_player_win(+building)
     // Pass in a player's building and see if their building is all 1s or all 0s
-    bool check_player_win(Building playerBuidling) {
+    bool check_player_win(Building playingPlayerBuidling, Building opponentPlayerBuidling) {
         bool allOnes = true;
         bool allZeros = true;
         for(int i=0; i<4; i++) {
             for(int j=0; j<5; j++) {
-                if(playerBuidling.building[i][j] != 1) {
+                if(playingPlayerBuidling.building[i][j] != 1) {
                     allOnes = false;
                 }
-                if(playerBuidling.building[i][j] != 0) {
+                if(opponentPlayerBuidling.building[i][j] != 0) {
                     allZeros = false;
                 }
             }
