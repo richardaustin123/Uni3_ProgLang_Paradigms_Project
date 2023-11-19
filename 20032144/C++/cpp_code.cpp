@@ -97,6 +97,38 @@ public:
     bool playerOnesGo = true;
     bool playerTwosGo = false;
 
+    // intro()
+    void intro() {
+        cout << "Welcome to Saviour vs Scorcher\n";
+        cout << "\nYOUR BUILDING IS ON FIRE\n";
+        cout << "And so is your opponents...\n";
+        cout << "You hate your opponent...\n";
+        cout << "You can save your building... or destroy your opponents...\n";
+        cout << "1 = Water";
+        cout << "0 = Fire\n";
+        cout << "Press enter to continue\n";
+        cin.ignore();
+        cout << "If you stack two 1's on top of each other, then the water will flow down to all rooms directly below\n";
+        cout << "If you stack two 0's on top of each other, then the fire will flow up to all rooms directly above\n";
+        cout << "Press enter to continue\n";
+        cin.ignore();
+        display_both_buildings();
+        cout << "Press enter to continue\n";
+        cin.ignore();
+        cout << "These are the building numbers\n";
+        display_building_numbers();
+        cout << "Press enter to start\n\n";
+        cin.ignore();
+    }
+
+    // display_building_numbers()
+    void  display_building_numbers() {
+        cout << (" 16.  17.  18.  19.  20.\n");
+        cout << (" 11.  12.  13.  14.  15.\n");
+        cout << (" 6.   7.   8.   9.   10.\n");
+        cout << (" 1.   2.   3.   4.   5.\n\n");
+    }
+
     // display_both_buildings()
     void display_both_buildings() {
         cout << "Player One's Building: " << endl;
@@ -129,10 +161,12 @@ public:
     void check_winner() {
         if(check_player_win(playerOneBuilding)) {
             cout << "Player One wins" << endl;
+            display_both_buildings();
             gameOver = true;
         }
         if(check_player_win(playerTwoBuilding)) {
             cout << "Player Two wins" << endl;
+            display_both_buildings();
             gameOver = true;
         }
     }
@@ -220,6 +254,7 @@ public:
 // Create a game instance and call the game_loop() function
 int main() {
     Game gameInstance;
+    gameInstance.intro();
     gameInstance.game_loop();
 
     return 0;
